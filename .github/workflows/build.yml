@@ -1,4 +1,5 @@
 
+
 name: Build StreamX iOS
 
 on:
@@ -20,7 +21,7 @@ jobs:
       - name: Generate Xcode project
         run: xcodegen generate
 
-      - name: Build iOS app
+      - name: Build unsigned app
         run: |
           xcodebuild \
             -project StreamX.xcodeproj \
@@ -28,5 +29,18 @@ jobs:
             -configuration Release \
             -sdk iphoneos \
             -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
             CODE_SIGNING_ALLOWED=NO \
             build
+
+      - name: Package unsigned IPA
+        run: |
+          mkdir -p Payload
+          cp -R build/Build/Products/Release-iphoneos/StreamX.app Payload/
+          zip -qry StreamX-unsigned.ipa Payload
+
+      - name: Upload IPA
+        uses: actions/upload-artifact@v4
+        with:
+          name: StreamX-unsigned
+          path: StreamX-unsigned.ipa

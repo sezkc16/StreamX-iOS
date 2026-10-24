@@ -1,4 +1,6 @@
 
+
+
 import SwiftUI
 
 struct HomeView: View {
@@ -10,86 +12,102 @@ struct HomeView: View {
     ]
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 28) {
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
 
-                HStack {
-                    Text("STREAMX")
-                        .font(.system(size: 28, weight: .black))
-                        .foregroundStyle(.red)
+                    header
 
-                    Spacer()
+                    featuredSection
+                        .frame(height: min(
+                            geometry.size.height * 0.32,
+                            240
+                        ))
 
-                    Image(systemName: "person.crop.circle")
-                        .font(.title2)
-                        .foregroundStyle(.white)
-                }
-                .padding(.top, 12)
+                    HStack {
+                        Text("Explore Movies")
+                            .font(.title3.bold())
 
-                featuredSection
+                        Spacer()
 
-                HStack {
-                    Text("Explore Movies")
-                        .font(.title2.bold())
+                        Text("\(manager.allMovies.count) Titles")
+                            .font(.caption)
+                            .foregroundStyle(.gray)
+                    }
 
-                    Spacer()
-
-                    Text("\(manager.allMovies.count) Titles")
-                        .font(.caption)
-                        .foregroundStyle(.gray)
-                }
-
-                LazyVGrid(columns: columns, spacing: 20) {
-                    ForEach(manager.allMovies) { movie in
-                        NavigationLink {
-                            MoviePlayerView(movie: movie)
-                        } label: {
-                            movieCard(movie)
+                    if manager.allMovies.isEmpty {
+                        ContentPlaceholder()
+                    } else {
+                        LazyVGrid(
+                            columns: columns,
+                            spacing: 16
+                        ) {
+                            ForEach(manager.allMovies) { movie in
+                                NavigationLink {
+                                    MoviePlayerView(movie: movie)
+                                } label: {
+                                    movieCard(movie)
+                                }
+                                .buttonStyle(.plain)
+                            }
                         }
-                        .buttonStyle(.plain)
                     }
                 }
-
-                if manager.allMovies.isEmpty {
-                    ContentPlaceholder()
-                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 24)
             }
-            .padding(.horizontal, 18)
-            .padding(.bottom, 30)
+            .scrollIndicators(.hidden)
         }
-        .background(Color.black)
+        .background(Color.black.ignoresSafeArea())
         .foregroundStyle(.white)
-        .navigationBarHidden(true)
+        .toolbar(.hidden, for: .navigationBar)
+    }
+
+    private var header: some View {
+        HStack {
+            Text("STREAMX")
+                .font(.system(size: 25, weight: .black))
+                .foregroundStyle(.red)
+
+            Spacer()
+
+            Image(systemName: "person.crop.circle")
+                .font(.title2)
+        }
     }
 
     private var featuredSection: some View {
         ZStack(alignment: .bottomLeading) {
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 16)
                 .fill(
                     LinearGradient(
                         colors: [
-                            Color(red: 0.25, green: 0.1, blue: 0.15),
-                            Color.black
+                            Color(red: 0.3, green: 0.1, blue: 0.15),
+                            Color(red: 0.08, green: 0.08, blue: 0.1)
                         ],
-                        startPoint: .top,
-                        endPoint: .bottom
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
                     )
                 )
 
-            VStack(alignment: .leading, spacing: 14) {
-                Spacer()
+            VStack(alignment: .leading, spacing: 10) {
+                Spacer(minLength: 0)
 
-                Text("WELCOME TO STREAMX")
-                    .font(.caption.bold())
+                Text("STREAMX ORIGINAL")
+                    .font(.system(size: 10, weight: .bold))
                     .tracking(2)
                     .foregroundStyle(.red)
 
-                Text("Unlimited Entertainment")
-                    .font(.system(size: 32, weight: .bold))
-                    .fixedSize(horizontal: false, vertical: true)
+                Text("Unlimited\nEntertainment")
+                    .font(.system(size: 26, weight: .bold))
+                    .fixedSize(
+                        horizontal: false,
+                        vertical: true
+                    )
 
-                Text("Discover movies from your installed add-ons.")
-                    .font(.subheadline)
+                Text("Your movies. Your experience.")
+                    .font(.caption)
                     .foregroundStyle(.gray)
 
                 if let movie = manager.allMovies.first {
@@ -97,30 +115,28 @@ struct HomeView: View {
                         MoviePlayerView(movie: movie)
                     } label: {
                         Label("Watch Now", systemImage: "play.fill")
-                            .font(.headline)
-                            .padding(.horizontal, 20)
-                            .padding(.vertical, 12)
+                            .font(.subheadline.bold())
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 9)
                             .background(.red)
                             .clipShape(Capsule())
                     }
                 }
             }
-            .padding(24)
+            .padding(18)
         }
-        .frame(height: 290)
     }
 
     private func movieCard(_ movie: StreamMovie) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color(white: 0.12))
-
-                Image(systemName: "film.fill")
-                    .font(.system(size: 45))
-                    .foregroundStyle(.gray)
-            }
-            .frame(height: 220)
+        VStack(alignment: .leading, spacing: 8) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(white: 0.14))
+                .overlay {
+                    Image(systemName: "film.fill")
+                        .font(.largeTitle)
+                        .foregroundStyle(.gray)
+                }
+                .aspectRatio(0.72, contentMode: .fit)
 
             Text(movie.title)
                 .font(.subheadline.bold())
@@ -131,19 +147,173 @@ struct HomeView: View {
 
 struct ContentPlaceholder: View {
     var body: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 10) {
             Image(systemName: "film.stack")
-                .font(.system(size: 45))
+                .font(.largeTitle)
                 .foregroundStyle(.gray)
 
-            Text("Your Library Is Empty")
+            Text("No Movies Yet")
                 .font(.headline)
 
-            Text("Install an add-on to discover movies.")
-                .font(.subheadline)
+            Text("Install an add-on to start watching.")
+                .font(.caption)
                 .foregroundStyle(.gray)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 50)
+        .padding(.vertical, 25)
+    }
+}
+   ]
+
+    var body: some View {
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
+
+                    header
+
+                    featuredSection
+                        .frame(height: min(
+                            geometry.size.height * 0.32,
+                            240
+                        ))
+
+                    HStack {
+                        Text("Explore Movies")
+                            .font(.title3.bold())
+
+                        Spacer()
+
+                        Text("\(manager.allMovies.count) Titles")
+                            .font(.caption)
+                            .foregroundStyle(.gray)
+                    }
+
+                    if manager.allMovies.isEmpty {
+                        ContentPlaceholder()
+                    } else {
+                        LazyVGrid(
+                            columns: columns,
+                            spacing: 16
+                        ) {
+                            ForEach(manager.allMovies) { movie in
+                                NavigationLink {
+                                    MoviePlayerView(movie: movie)
+                                } label: {
+                                    movieCard(movie)
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 24)
+            }
+            .scrollIndicators(.hidden)
+        }
+        .background(Color.black.ignoresSafeArea())
+        .foregroundStyle(.white)
+        .toolbar(.hidden, for: .navigationBar)
+    }
+
+    private var header: some View {
+        HStack {
+            Text("STREAMX")
+                .font(.system(size: 25, weight: .black))
+                .foregroundStyle(.red)
+
+            Spacer()
+
+            Image(systemName: "person.crop.circle")
+                .font(.title2)
+        }
+    }
+
+    private var featuredSection: some View {
+        ZStack(alignment: .bottomLeading) {
+            RoundedRectangle(cornerRadius: 16)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 0.3, green: 0.1, blue: 0.15),
+                            Color(red: 0.08, green: 0.08, blue: 0.1)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+
+            VStack(alignment: .leading, spacing: 10) {
+                Spacer(minLength: 0)
+
+                Text("STREAMX ORIGINAL")
+                    .font(.system(size: 10, weight: .bold))
+                    .tracking(2)
+                    .foregroundStyle(.red)
+
+                Text("Unlimited\nEntertainment")
+                    .font(.system(size: 26, weight: .bold))
+                    .fixedSize(
+                        horizontal: false,
+                        vertical: true
+                    )
+
+                Text("Your movies. Your experience.")
+                    .font(.caption)
+                    .foregroundStyle(.gray)
+
+                if let movie = manager.allMovies.first {
+                    NavigationLink {
+                        MoviePlayerView(movie: movie)
+                    } label: {
+                        Label("Watch Now", systemImage: "play.fill")
+                            .font(.subheadline.bold())
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 9)
+                            .background(.red)
+                            .clipShape(Capsule())
+                    }
+                }
+            }
+            .padding(18)
+        }
+    }
+
+    private func movieCard(_ movie: StreamMovie) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color(white: 0.14))
+                .overlay {
+                    Image(systemName: "film.fill")
+                        .font(.largeTitle)
+                        .foregroundStyle(.gray)
+                }
+                .aspectRatio(0.72, contentMode: .fit)
+
+            Text(movie.title)
+                .font(.subheadline.bold())
+                .lineLimit(2)
+        }
+    }
+}
+
+struct ContentPlaceholder: View {
+    var body: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "film.stack")
+                .font(.largeTitle)
+                .foregroundStyle(.gray)
+
+            Text("No Movies Yet")
+                .font(.headline)
+
+            Text("Install an add-on to start watching.")
+                .font(.caption)
+                .foregroundStyle(.gray)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 25)
     }
 }

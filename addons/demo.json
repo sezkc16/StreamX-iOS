@@ -1,0 +1,16 @@
+
+{
+  "id": "com.streamx.demo",
+  "name": "StreamX Demo",
+  "version": "1.0.0",
+  "description": "Demo streaming addon",
+  "baseUrl": "https://storage.googleapis.com",
+  "catalog": [
+    {
+      "id": "big-buck-bunny",
+      "title": "Big Buck Bunny",
+      "type": "movie",
+      "streamUrl": "https://storage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    }
+  ]
+}

@@ -1,19 +1,24 @@
 
+
 import SwiftUI
 
 @main
 struct StreamXApp: App {
+    @StateObject private var addonManager = AddonManager()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(manager: addonManager)
         }
     }
 }
 
 struct ContentView: View {
+    @ObservedObject var manager: AddonManager
+
     var body: some View {
         NavigationStack {
-            VStack(spacing: 24) {
+            VStack(spacing: 22) {
                 Spacer()
 
                 Image(systemName: "play.rectangle.fill")
@@ -28,6 +33,18 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
 
                 NavigationLink {
+                    MoviesView(manager: manager)
+                } label: {
+                    Label(
+                        "Browse Movies",
+                        systemImage: "film.fill"
+                    )
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                }
+                .buttonStyle(.borderedProminent)
+
+                NavigationLink {
                     VideoPlayerView()
                 } label: {
                     Label(
@@ -37,10 +54,10 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity)
                     .padding()
                 }
-                .buttonStyle(.borderedProminent)
+                .buttonStyle(.bordered)
 
                 NavigationLink {
-                    AddonView()
+                    AddonView(manager: manager)
                 } label: {
                     Label(
                         "Manage Add-ons",

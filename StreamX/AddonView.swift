@@ -2,7 +2,9 @@
 import SwiftUI
 
 struct AddonView: View {
-    @StateObject private var manager = AddonManager()
+    
+@ObservedObject var manager: AddonManager
+
     @State private var addonURL = ""
     @State private var isInstalling = false
 

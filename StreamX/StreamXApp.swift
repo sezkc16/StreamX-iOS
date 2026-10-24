@@ -38,10 +38,22 @@ struct ContentView: View {
                     .padding()
                 }
                 .buttonStyle(.borderedProminent)
-                .padding(.horizontal)
+
+                NavigationLink {
+                    AddonView()
+                } label: {
+                    Label(
+                        "Manage Add-ons",
+                        systemImage: "puzzlepiece.extension.fill"
+                    )
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                }
+                .buttonStyle(.bordered)
 
                 Spacer()
             }
+            .padding(.horizontal)
             .navigationTitle("StreamX")
         }
     }

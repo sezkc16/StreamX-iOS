@@ -13,17 +13,34 @@ struct StreamXApp: App {
 struct ContentView: View {
     var body: some View {
         NavigationStack {
-            VStack(spacing: 20) {
+            VStack(spacing: 24) {
+                Spacer()
+
                 Image(systemName: "play.rectangle.fill")
-                    .font(.system(size: 70))
+                    .font(.system(size: 75))
                     .foregroundStyle(.blue)
 
-                Text("Welcome to StreamX")
-                    .font(.title)
+                Text("StreamX")
+                    .font(.largeTitle)
                     .bold()
 
-                Text("Your native iOS streaming app")
+                Text("Your Native iOS Streaming App")
                     .foregroundStyle(.secondary)
+
+                NavigationLink {
+                    VideoPlayerView()
+                } label: {
+                    Label(
+                        "Play Stream",
+                        systemImage: "play.fill"
+                    )
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                }
+                .buttonStyle(.borderedProminent)
+                .padding(.horizontal)
+
+                Spacer()
             }
             .navigationTitle("StreamX")
         }

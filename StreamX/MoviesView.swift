@@ -8,13 +8,23 @@ struct MoviesView: View {
     var body: some View {
         List {
             if manager.allMovies.isEmpty {
-                ContentUnavailableView(
-                    "No Movies",
-                    systemImage: "film",
-                    description: Text(
-                        "Install an add-on with a movie catalog."
-                    )
-                )
+                
+VStack(spacing: 12) {
+    Image(systemName: "film")
+        .font(.system(size: 45))
+        .foregroundStyle(.secondary)
+
+    Text("No Movies")
+        .font(.headline)
+
+    Text("Install an add-on with a movie catalog.")
+        .font(.subheadline)
+        .foregroundStyle(.secondary)
+        .multilineTextAlignment(.center)
+}
+.frame(maxWidth: .infinity)
+.padding()
+
             } else {
                 ForEach(manager.allMovies) { movie in
                     NavigationLink {

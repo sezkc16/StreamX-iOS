@@ -1,5 +1,14 @@
 
+
 import Foundation
+import Combine
+
+struct StreamMovie: Codable, Identifiable {
+    let id: String
+    let title: String
+    let type: String
+    let streamUrl: String
+}
 
 struct StreamAddon: Codable, Identifiable {
     let id: String
@@ -7,12 +16,17 @@ struct StreamAddon: Codable, Identifiable {
     let version: String
     let description: String
     let baseUrl: String
+    let catalog: [StreamMovie]?
 }
 
 @MainActor
 class AddonManager: ObservableObject {
     @Published var addons: [StreamAddon] = []
     @Published var errorMessage: String?
+
+    var allMovies: [StreamMovie] {
+        addons.flatMap { $0.catalog ?? [] }
+    }
 
     func installAddon(from urlString: String) async {
         errorMessage = nil
@@ -55,7 +69,25 @@ class AddonManager: ObservableObject {
                 return
             }
 
-            if !addons.contains(where: { $0.id == addon.id }) {
+            let validMovies = (addon.catalog ?? []).allSatisfy {
+                guard let streamURL = URL(string: $0.streamUrl) else {
+                    return false
+                }
+
+                return streamURL.scheme?.lowercased() == "https"
+                    && streamURL.host != nil
+            }
+
+            guard validMovies else {
+                errorMessage = "Invalid catalog stream URL."
+                return
+            }
+
+            if let index = addons.firstIndex(
+                where: { $0.id == addon.id }
+            ) {
+                addons[index] = addon
+            } else {
                 addons.append(addon)
             }
         } catch {
